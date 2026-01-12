@@ -1,7 +1,5 @@
 # GigFlow - Advanced Freelance Marketplace
 
-![GigFlow Banner](https://via.placeholder.com/1200x400?text=GigFlow+Platform)
-
 GigFlow is a modern, production-ready freelance marketplace built with the MERN stack. It empowers users to seamlessly switch between hiring talent and finding work, backed by robust real-time features and a premium, responsive design.
 
 ## 🚀 Key Features
