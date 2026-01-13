@@ -3,13 +3,9 @@ const Bid = require('../models/Bid');
 const Gig = require('../models/Gig');
 const Notification = require('../models/Notification');
 
-// @desc    Place a bid on a gig
-// @route   POST /api/bids
-// @access  Private
 const placeBid = async (req, res) => {
   const { gigId, message, amount } = req.body;
 
-  // Validate gig exists
   const gig = await Gig.findById(gigId);
   if (!gig) {
     return res.status(404).json({ message: 'Gig not found' });
@@ -23,7 +19,6 @@ const placeBid = async (req, res) => {
       return res.status(400).json({ message: 'Gig is not open for bidding' });
   }
 
-  // Check if user already bid
   const existingBid = await Bid.findOne({ gigId, freelancerId: req.user._id });
   if (existingBid) {
       return res.status(400).json({ message: 'You have already placed a bid' });
@@ -39,9 +34,6 @@ const placeBid = async (req, res) => {
   res.status(201).json(bid);
 };
 
-// @desc    Get bids for a specific gig
-// @route   GET /api/bids/:gigId
-// @access  Private (Owner only)
 const getBidsByGigId = async (req, res) => {
     const gig = await Gig.findById(req.params.gigId);
     
@@ -49,7 +41,6 @@ const getBidsByGigId = async (req, res) => {
         return res.status(404).json({ message: 'Gig not found' });
     }
 
-    // Only owner can see bids
     if (gig.ownerId.toString() !== req.user._id.toString()) {
         return res.status(403).json({ message: 'Not authorized to view bids for this gig' });
     }
@@ -58,9 +49,6 @@ const getBidsByGigId = async (req, res) => {
     res.json(bids);
 };
 
-// @desc    Hire a freelancer (Atomic Transaction)
-// @route   PATCH /api/bids/:bidId/hire
-// @access  Private (Owner only)
 const hireFreelancer = async (req, res) => {
     const { bidId } = req.params;
     
@@ -80,27 +68,22 @@ const hireFreelancer = async (req, res) => {
             throw new Error('Gig not found');
         }
 
-        // Verify ownership
         if (gig.ownerId.toString() !== req.user._id.toString()) {
             res.status(403);
             throw new Error('Not authorized to hire for this gig');
         }
 
-        // Check if gig is already assigned (Race condition prevention)
         if (gig.status !== 'open') {
             res.status(400);
             throw new Error('Gig is already assigned');
         }
 
-        // 1. Update Gig status
         gig.status = 'assigned';
         await gig.save({ session });
 
-        // 2. Update Chosen Bid status
         bid.status = 'hired';
         await bid.save({ session });
 
-        // 3. Reject all other bids for this gig
         await Bid.updateMany(
             { gigId: gig._id, _id: { $ne: bidId } },
             { status: 'rejected' },
@@ -110,10 +93,8 @@ const hireFreelancer = async (req, res) => {
         await session.commitTransaction();
         session.endSession();
 
-        // 4. Notifications (Socket + DB Persistance)
         const io = req.app.get('io');
         
-        // Save Hired Notification
         const hiredMsg = `Congratulations! You have been hired for ${gig.title}!`;
         await Notification.create({
             userId: bid.freelancerId,
@@ -130,9 +111,7 @@ const hireFreelancer = async (req, res) => {
             });
         }
 
-        // Handle Rejected Notifications
         const rejectedBids = await Bid.find({ gigId: gig._id, _id: { $ne: bidId } });
-        // Bulk create for efficiency? Or loop. Loop is fine for small scale.
         const rejectedNotifications = rejectedBids.map(rb => ({
             userId: rb.freelancerId,
             type: 'rejected',

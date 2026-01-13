@@ -15,8 +15,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Fluid roles: Everyone is a user. 
-  // We can add profile details here.
   bio: {
     type: String,
     default: '',

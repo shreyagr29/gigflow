@@ -4,7 +4,6 @@ const User = require('../models/User');
 const protect = async (req, res, next) => {
   let token;
 
-  // Check for token in cookies
   token = req.cookies.jwt;
 
   if (token) {

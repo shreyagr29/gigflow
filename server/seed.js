@@ -70,15 +70,9 @@ const seedData = async () => {
     console.log('Clearing existing data...');
     await Gig.deleteMany({});
     await Bid.deleteMany({});
-    // Optionally clear users if you want fresh users every time, 
-    // but usually safer to keep or check for existence. 
-    // For this seed script, 'User' creation logic handles checking existence in app logic, 
-    // but here we will clear users strictly to ensure clean state as requested.
     await User.deleteMany({}); 
 
     console.log('Seeding Users...');
-    // We can't use insertMany directly because we need the 'pre save' hook to hash passwords.
-    // So we iterate.
     const createdUsers = [];
     for (const u of users) {
         const user = new User(u);
@@ -88,8 +82,8 @@ const seedData = async () => {
 
     console.log(`Created ${createdUsers.length} users.`);
 
-    const clientUser = createdUsers[0]; // Alice
-    const freelancers = createdUsers.slice(1); // Bob, Charlie, Dave, Eve
+    const clientUser = createdUsers[0]; 
+    const freelancers = createdUsers.slice(1); 
 
     console.log('Seeding Gigs...');
     const createdGigs = [];
@@ -99,13 +93,12 @@ const seedData = async () => {
         if (i > 15) status = 'completed';
         else if (i > 12) status = 'assigned';
 
-        // Rotate owners just for fun, or strictly keep Alice as main client
-        const owner = i % 2 === 0 ? clientUser : freelancers[3]; // Alice and Eve post gigs
+        const owner = i % 2 === 0 ? clientUser : freelancers[3]; 
 
         const gig = await Gig.create({
             title: gigTitles[i],
             description: `This is a detailed description for the project "${gigTitles[i]}". We need a professional to deliver high-quality work within the deadline.`,
-            budget: Math.floor(Math.random() * 5000) + 100, // Random budget 100-5100
+            budget: Math.floor(Math.random() * 5000) + 100,
             ownerId: owner._id,
             status: status,
         });
@@ -114,18 +107,16 @@ const seedData = async () => {
     console.log(`Created ${createdGigs.length} gigs.`);
 
     console.log('Seeding Bids...');
-    // Add bids to the first 3 OPEN gigs
     const openGigs = createdGigs.filter(g => g.status === 'open').slice(0, 3);
     
     for (const gig of openGigs) {
-        // Create 3 bids per gig from different freelancers
         for (let j = 0; j < 3; j++) {
             const freelancer = freelancers[j % freelancers.length];
             await Bid.create({
                 gigId: gig._id,
                 freelancerId: freelancer._id,
                 message: `I am the best fit for "${gig.title}". I have extensive experience in this field.`,
-                amount: gig.budget - (Math.floor(Math.random() * 50) + 10), // Bid slightly lower than budget
+                amount: gig.budget - (Math.floor(Math.random() * 50) + 10), 
                 status: 'pending',
             });
         }

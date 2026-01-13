@@ -6,7 +6,6 @@ const http = require('http');
 const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 
-// Config
 dotenv.config();
 connectDB();
 
@@ -22,21 +21,18 @@ const io = new Server(server, {
 
 app.set('io', io);
 
-// Middleware
-app.set('trust proxy', 1); // Trust first proxy
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOptions = {
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true, // Allow cookies
+    credentials: true, 
 };
 app.use(cors(corsOptions));
 
-// Socket.io
 io.on('connection', (socket) => {
-  // console.log('A user connected:', socket.id);
 
   socket.on('join', (userId) => {
     if (userId) {
@@ -46,11 +42,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    // console.log('User disconnected');
   });
 });
 
-// Routes
 const authRoutes = require('./routes/authRoutes');
 const gigRoutes = require('./routes/gigRoutes');
 const bidRoutes = require('./routes/bidRoutes');
@@ -65,7 +59,6 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Error Handling Middleware
 app.use((err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(statusCode);
