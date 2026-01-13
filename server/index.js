@@ -23,6 +23,7 @@ const io = new Server(server, {
 app.set('io', io);
 
 // Middleware
+app.set('trust proxy', 1); // Trust first proxy
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
