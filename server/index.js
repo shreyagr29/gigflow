@@ -12,9 +12,12 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+// Sanitize CLIENT_URL (remove trailing slash) to prevent CORS mismatches
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, "") : 'http://localhost:5173';
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: clientUrl,
     credentials: true,
   },
 });
@@ -27,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOptions = {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: clientUrl,
     credentials: true, 
 };
 app.use(cors(corsOptions));
