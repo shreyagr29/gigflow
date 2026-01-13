@@ -12,7 +12,6 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-// Sanitize CLIENT_URL (remove trailing slash) to prevent CORS mismatches
 const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, "") : 'http://localhost:5173';
 
 const io = new Server(server, {

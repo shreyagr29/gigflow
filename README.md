@@ -2,6 +2,11 @@
 
 GigFlow is a modern, production-ready freelance marketplace built with the MERN stack. It empowers users to seamlessly switch between hiring talent and finding work, backed by robust real-time features and a premium, responsive design.
 
+## 🔗 Live Demo
+
+- **Frontend App**: [https://gigflow-rust.vercel.app](https://gigflow-rust.vercel.app)
+- **Backend API**: [https://gigflow-1r2d.onrender.com](https://gigflow-1r2d.onrender.com)
+
 ## 🚀 Key Features
 
 ### 🌟 Core Functionality
