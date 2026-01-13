@@ -13,20 +13,15 @@ import GigDetailsPage from './pages/GigDetailsPage';
 function App() {
   const { userInfo } = useSelector((state) => state.auth);
 
-  // We can use a custom hook or basic effect. 
-  // Ideally, useSocket connects. We need to listen to events.
-  // Let's implement a simple Toast system here or use the alert for now as requested by user logic "create a notification component... that displays... as toast".
-  // Since we don't have a toast library installed, we will build a simple one.
   const [notification, setNotification] = React.useState(null);
 
   useEffect(() => {
     if (userInfo) {
-      const socket = io('http://localhost:5000');
+      const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
       socket.emit('join', userInfo._id);
       
       socket.on('notification', (data) => {
            setNotification(data);
-           // Auto dismiss
            setTimeout(() => setNotification(null), 5000);
       });
 

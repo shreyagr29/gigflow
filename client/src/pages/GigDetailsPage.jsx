@@ -21,7 +21,6 @@ const GigDetailsPage = () => {
   const isOwner = userInfo && gig && userInfo._id === gig.ownerId._id;
   
   useEffect(() => {
-      // If owner, fetch bids
       if (isOwner) {
           axios.get(`/api/bids/${id}`)
                .then(res => setBids(res.data))
@@ -45,9 +44,7 @@ const GigDetailsPage = () => {
       try {
           await axios.patch(`/api/bids/${bidId}/hire`);
           alert('Freelancer hired!');
-          // Refresh data
           dispatch(fetchGigById(id));
-          // Refresh bids
           axios.get(`/api/bids/${id}`).then(res => setBids(res.data));
       } catch (error) {
           alert(error.response?.data?.message || 'Error hiring');
