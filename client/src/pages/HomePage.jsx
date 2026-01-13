@@ -8,13 +8,12 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const { gigs, loading, error } = useSelector((state) => state.gig);
   const [keyword, setKeyword] = React.useState('');
-  const [status, setStatus] = React.useState('open'); // Default to open as per requirement to 'Browse Gigs' seeing Open ones
+  const [status, setStatus] = React.useState('open');
 
   useEffect(() => {
     dispatch(fetchGigs({ keyword, status }));
-  }, [dispatch, status, keyword]); // Re-fetch when filters change (or use a button for keyword to avoid too many requests)
+  }, [dispatch, status, keyword]); 
 
-  // Debouncing could be good for keyword, but for now strict assignment compliance:
   const handleSearch = (e) => {
       e.preventDefault();
       dispatch(fetchGigs({ keyword, status }));

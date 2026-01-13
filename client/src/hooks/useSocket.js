@@ -15,12 +15,6 @@ const useSocket = (url) => {
 
     return () => {
       if (socketRef.current) {
-        // We don't necessarily want to disconnect on every re-render or navigation if we want persistent connection, 
-        // but for a hook it's good practice to clean up unless we move this to global context.
-        // For this app, let's keep it alive or manage carefully. 
-        // Actually, preventing disconnect on simple unmounts that are just re-renders is tricky with strict mode.
-        // Better pattern: Initialize socket in specific top-level component or context.
-        // However, user requested a Hook. We will handle cleanup but ensure we don't churn.
         socketRef.current.disconnect(); 
         socketRef.current = null;
       }

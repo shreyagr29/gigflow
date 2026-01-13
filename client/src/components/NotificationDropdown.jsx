@@ -20,7 +20,6 @@ const NotificationDropdown = () => {
 
     useEffect(() => {
         fetchNotifications();
-        // Optional: Poll every 30s or use socket context to trigger re-fetch
         const interval = setInterval(fetchNotifications, 10000); 
         return () => clearInterval(interval);
     }, []);
@@ -30,7 +29,6 @@ const NotificationDropdown = () => {
     const handleMarkRead = async (id) => {
         try {
             await axios.patch(`/api/notifications/${id}/read`);
-            // Update local state
             setNotifications(notifications.map(n => n._id === id ? { ...n, read: true } : n));
             setUnreadCount(prev => Math.max(0, prev - 1));
         } catch (error) {
@@ -38,7 +36,6 @@ const NotificationDropdown = () => {
         }
     };
 
-    // Click outside handler
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
